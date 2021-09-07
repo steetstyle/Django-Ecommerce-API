@@ -1,0 +1,8 @@
+# General
+# ------------------------------------------------------------------------------
+USE_DOCKER=yes
+IPYTHONDIR=/app/.ipython
+
+DJANGO_SUPERUSER_PASSWORD=my_password
+DJANGO_SUPERUSER_USERNAME=my_user
+DJANGO_SUPERUSER_EMAIL=my_user@domain.com
