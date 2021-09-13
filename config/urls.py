@@ -19,7 +19,6 @@ urlpatterns = [
     #app
     path('payments/', include('payments.urls')), # new
 
-
     #path('producer/', include('project.producer.urls')),
 ]
 

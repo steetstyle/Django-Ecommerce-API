@@ -4,21 +4,17 @@ from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models import JSONField  # type: ignore
-from django.db.models import (
-    Q,
-    TextField,
-)
+
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel
 
 from project.core.utils.draftjs import json_content_to_raw_text
-from project.core.utils.editorjs import clean_editor_js
-from project.core.db.fields import SanitizedJSONField
-from project.core.models import SortableModel
 
-
-from wagtail.admin.edit_handlers import FieldPanel
+from modelcluster.models import ClusterableModel
+from modelcluster.fields import ParentalKey
+from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, InlinePanel
 from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.core.fields import RichTextField
 
 
 from . import ProductMediaTypes
@@ -27,14 +23,24 @@ from . import ProductMediaTypes
 def get_category_image_path(instance, filename):
     return os.path.join(f'category/{str(instance.id)}', str(instance.id), filename)
 
-class Category(MPTTModel):
+class Category(MPTTModel,ClusterableModel):
     name = models.CharField(max_length=250)
     slug = models.SlugField(max_length=255, unique=True, allow_unicode=True)
-    description = SanitizedJSONField(blank=True, null=True, sanitizer=clean_editor_js)
-    parent = models.ForeignKey(
-        "self", null=True, blank=True, related_name="children", on_delete=models.CASCADE
+    description = RichTextField(null=True, blank=True)
+    parent = ParentalKey(
+         "self",
+        related_name="children",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
-    image = models.ImageField(upload_to=get_category_image_path, blank=True, null=True)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     background_image_alt = models.CharField(max_length=128, blank=True)
 
     objects = models.Manager()
@@ -44,8 +50,6 @@ class Category(MPTTModel):
         FieldPanel('name'),
         FieldPanel('slug'),
         FieldPanel('description'),
-        FieldPanel('parent'),
-        FieldPanel('background_iamge'),
         FieldPanel('background_image_alt'),
         ImageChooserPanel('image')
     ]
@@ -57,14 +61,19 @@ class Category(MPTTModel):
 def get_product_image_path(instance, filename):
     return os.path.join(f'product/{str(instance.id)}', str(instance.id), filename)
 
-class Product(models.Model):
+class Product(ClusterableModel):
     name = models.CharField(max_length=250)
     slug = models.SlugField(max_length=255, unique=True, allow_unicode=True)
-    description = SanitizedJSONField(blank=True, null=True, sanitizer=clean_editor_js)
-    description_plaintext = TextField(blank=True)
+    description =     description = RichTextField(null=True, blank=True)
     search_vector = SearchVectorField(null=True, blank=True)
-    image = models.ImageField(upload_to=get_product_image_path, blank=True, null=True)
-    category = models.ForeignKey(
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    category = ParentalKey(
         Category,
         related_name="products",
         on_delete=models.SET_NULL,
@@ -80,7 +89,6 @@ class Product(models.Model):
         FieldPanel('name'),
         FieldPanel('slug'),
         FieldPanel('description'),
-        FieldPanel('description_plaintext'),
         FieldPanel('search_vector'),
         FieldPanel('category'),
         ImageChooserPanel('image')
@@ -120,8 +128,8 @@ class Product(models.Model):
 def get_product_media_image_path(instance, filename):
     return os.path.join(f'product/{str(instance.product.id)}', str(instance.id), filename)
 
-class ProductMedia(SortableModel):
-    product = models.ForeignKey(Product, related_name="media", on_delete=models.CASCADE)
+class ProductMedia(ClusterableModel):
+    product = ParentalKey(Product, related_name="media", on_delete=models.CASCADE)
     alt = models.CharField(max_length=128, blank=True)
     type = models.CharField(
         max_length=32,
@@ -130,20 +138,25 @@ class ProductMedia(SortableModel):
     )
     external_url = models.CharField(max_length=256, blank=True, null=True)
     oembed_data = JSONField(blank=True, default=dict)
-    image = models.ImageField(upload_to=get_category_image_path, blank=True, null=True)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     panels = [
-        FieldPanel('product'),
+        InlinePanel('product'),
         FieldPanel('alt'),
         FieldPanel('type'),
         FieldPanel('external_url'),
         FieldPanel('oembed_data'),
-        FieldPanel('category'),
         ImageChooserPanel('image')
     ]
 
     class Meta:
-        ordering = ("sort_order", "pk")
+        ordering = ("pk",)
         app_label = "product"
 
     def get_ordering_queryset(self):

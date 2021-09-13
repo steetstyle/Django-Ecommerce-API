@@ -35,6 +35,6 @@ class QRTable(models.Model):
 
     def save(self, *args, **kwargs):
         self.code = saveSystemCode(QRTable, self.code, self.pk, "qr_")
-        qr = pyqrcode.png(get_image_path(self,self.code))
-        self.image = qr
+        #qr = pyqrcode.png(get_image_path(self,self.code))
+        #self.image = qr
         super(QRTable, self).save(*args, **kwargs)
