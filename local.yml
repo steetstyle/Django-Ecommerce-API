@@ -1,14 +1,18 @@
-version: '3'
+version: '3.4'
 
 volumes:
   local_postgres_data: {}
   local_postgres_data_backups: {}
-
+  local_elasticsearch_data: {}
+    
 services:
   django:
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
+    networks:
+      - default
+      - together
     image: project_local_django
     container_name: django
     depends_on:
@@ -26,6 +30,10 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
+    networks:
+      - default
+      - together
+
     image: projectdb_production_postgres
     container_name: postgres
     volumes:
@@ -34,18 +42,28 @@ services:
     env_file:
       - ./.envs/.local/.postgres
 
-  docs:
-    image: project_local_docs
-    container_name: docs
-    build:
-      context: .
-      dockerfile: ./compose/local/docs/Dockerfile
-    env_file:
-      - ./.envs/.local/.django
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.18
+    container_name: elasticsearch
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     volumes:
-      - ./docs:/docs:z
-      - ./config:/app/config:z
-      - ./project:/app/project:z
+      - local_elasticsearch_data:/usr/share/elasticsearch/data
     ports:
-      - "7000:7000"
-    command: /start-docs
+      - 9200:9200
+    networks:
+      - default
+      - together
+
+networks:
+  default: 
+    driver: bridge
+  together: 
+    name: "together"
+    external: true

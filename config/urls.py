@@ -1,10 +1,26 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.views import defaults as default_views
 
+#wagtail 
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.core import urls as wagtail_urls
+from wagtail.documents import urls as wagtaildocs_urls
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    #salesman
+    path('sales/', include('salesman.urls')),
+    #wagtail
+    re_path(r'^cms/', include(wagtailadmin_urls)),
+    re_path(r'^documents/', include(wagtaildocs_urls)),
+    re_path(r'^pages/', include(wagtail_urls)),
+    #app
+    path('payments/', include('payments.urls')), # new
+
+
+    #path('producer/', include('project.producer.urls')),
 ]
 
 if settings.DEBUG:

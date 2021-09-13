@@ -6,3 +6,14 @@ IPYTHONDIR=/app/.ipython
 DJANGO_SUPERUSER_PASSWORD=my_password
 DJANGO_SUPERUSER_USERNAME=my_user
 DJANGO_SUPERUSER_EMAIL=my_user@domain.com
+
+SCHEMA_REGISTRY_URL = 'http://localhost:9091'
+
+STRIPE_LIVE_PUBLIC_KEY          = pk_live_
+STRIPE_LIVE_SECRET_KEY          = sk_live_
+STRIPE_TEST_PUBLIC_KEY          = pk_test_
+STRIPE_TEST_SECRET_KEY          = sk_test_
+STRIPE_LIVE_MODE                = False
+DJSTRIPE_WEBHOOK_SECRET         = whsec_123123
+DJSTRIPE_USE_NATIVE_JSONFIELD   = True
+DJSTRIPE_FOREIGN_KEY_TO_FIELD   = id

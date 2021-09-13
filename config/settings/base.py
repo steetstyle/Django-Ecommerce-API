@@ -64,11 +64,43 @@ DJANGO_APPS = [
     "django.forms",
 ]
 THIRD_PARTY_APPS = [
+    # salesman apps
+    'salesman.core',
+    'salesman.basket',
+    'salesman.checkout',
+    'salesman.orders',
+    'salesman.admin',
+    #wagtail apps
+    # wagtail
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.contrib.modeladmin',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail.core',
+    'modelcluster',
+    'taggit',
+    # others
     "crispy_forms",
+    "rest_framework",
+    "django_elasticsearch_dsl",
+    "django_elasticsearch_dsl_drf",
+    "mptt",
+    "djstripe",
 ]
 
 LOCAL_APPS = [
-    # Your stuff: custom apps go here
+    'project.core',
+    'project.product',
+    'project.qrtable',
+    'project.payments',
+
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -125,6 +157,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    #wagtail middlewares
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+
 ]
 
 # STATIC
@@ -249,3 +284,22 @@ LOGGING = {
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'elasticsearch:9200'
+    },
+}
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+WAGTAIL_SITE_NAME = 'EasyOrder Market'
+
+STRIPE_LIVE_PUBLIC_KEY          = env("STRIPE_LIVE_PUBLIC_KEY")
+STRIPE_LIVE_SECRET_KEY          = env("STRIPE_LIVE_SECRET_KEY")
+STRIPE_TEST_PUBLIC_KEY          = env("STRIPE_TEST_PUBLIC_KEY")
+STRIPE_TEST_SECRET_KEY          = env("STRIPE_TEST_SECRET_KEY")
+STRIPE_LIVE_MODE                = env.bool("STRIPE_LIVE_MODE")
+DJSTRIPE_WEBHOOK_SECRET         = env("DJSTRIPE_WEBHOOK_SECRET")
+DJSTRIPE_USE_NATIVE_JSONFIELD   = env("DJSTRIPE_USE_NATIVE_JSONFIELD")
+DJSTRIPE_FOREIGN_KEY_TO_FIELD   = env("DJSTRIPE_FOREIGN_KEY_TO_FIELD")

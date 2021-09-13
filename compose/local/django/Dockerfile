@@ -12,11 +12,30 @@ ARG BUILD_ENVIRONMENT=local
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
   build-essential \
+  manpages-dev \
+  libcairo2 \
+  libgdk-pixbuf2.0-0 \
+  liblcms2-2 \
+  libopenjp2-7 \
+  libpango-1.0-0 \
+  libpangocairo-1.0-0 \
+  libssl1.1 \
+  libtiff5 \
+  libwebp6 \
+  libxml2 \
+  libpq5 \
   # psycopg2 dependencies
-  libpq-dev
+  libpq-dev \
+  # libmagic dependencies
+  libmagic1 \
+  ffmpeg \
+  python3-magic \
+  python-magic \
+  libmagic-dev 
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements .
+RUN apt-get install libffi-dev
 
 # Create Python Dependency and Sub-Dependency Wheels.
 RUN pip wheel --wheel-dir /usr/src/app/wheels  \
