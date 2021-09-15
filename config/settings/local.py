@@ -58,4 +58,3 @@ INSTALLED_APPS += ["django_extensions"]  # noqa F405
 # Your stuff...
 # ------------------------------------------------------------------------------
 
-SCHEMA_REGISTRY_URL = env('SCHEMA_REGISTRY_URL')

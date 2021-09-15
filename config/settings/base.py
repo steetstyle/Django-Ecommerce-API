@@ -40,7 +40,7 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {"default": env.db("DATABASE_URL")}
+DATABASES = {"default": env.db("DATABASE_URL","postgres://sbKWeEvTJdqTEzQZQZEwOmPdBYWypreT:88Ya3pEkzsU13Q3jnQ9KGPh3UnIqUlM95SvyjUnc8cbNW5pyVweLIEtkCXK3KxPI@localhost:5432/my_awesome_project")}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # URLS
@@ -70,7 +70,6 @@ THIRD_PARTY_APPS = [
     'salesman.checkout',
     'salesman.orders',
     'salesman.admin',
-    #wagtail apps
     # wagtail
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
@@ -86,6 +85,8 @@ THIRD_PARTY_APPS = [
     'wagtail.core',
     'modelcluster',
     'taggit',
+    #cas
+    'django_cas_ng',
     # others
     "crispy_forms",
     "rest_framework",
@@ -93,6 +94,7 @@ THIRD_PARTY_APPS = [
     "django_elasticsearch_dsl_drf",
     "mptt",
     "djstripe",
+
 ]
 
 LOCAL_APPS = [
@@ -115,7 +117,11 @@ MIGRATION_MODULES = {"sites": "project.contrib.sites.migrations"}
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
+    # allauth auth backends
     "allauth.account.auth_backends.AuthenticationBackend",
+    # cas auth backends
+    'django_cas_ng.backends.CASBackend',
+
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 #AUTH_USER_MODEL = "users.User"
@@ -159,6 +165,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     #wagtail middlewares
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+    #cas middlewares
+    'django_cas_ng.middleware.CASMiddleware',
+
 
 ]
 
@@ -295,11 +304,28 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 WAGTAIL_SITE_NAME = 'EasyOrder Market'
 
-STRIPE_LIVE_PUBLIC_KEY          = env("STRIPE_LIVE_PUBLIC_KEY")
-STRIPE_LIVE_SECRET_KEY          = env("STRIPE_LIVE_SECRET_KEY")
-STRIPE_TEST_PUBLIC_KEY          = env("STRIPE_TEST_PUBLIC_KEY")
-STRIPE_TEST_SECRET_KEY          = env("STRIPE_TEST_SECRET_KEY")
-STRIPE_LIVE_MODE                = env.bool("STRIPE_LIVE_MODE")
-DJSTRIPE_WEBHOOK_SECRET         = env("DJSTRIPE_WEBHOOK_SECRET")
-DJSTRIPE_USE_NATIVE_JSONFIELD   = env("DJSTRIPE_USE_NATIVE_JSONFIELD")
-DJSTRIPE_FOREIGN_KEY_TO_FIELD   = env("DJSTRIPE_FOREIGN_KEY_TO_FIELD")
+STRIPE_LIVE_PUBLIC_KEY          = "pk_live_"
+STRIPE_LIVE_SECRET_KEY          = "sk_live_"
+STRIPE_TEST_PUBLIC_KEY          = "pk_test_LBurQpdJ1DlwhSgXtLQPth9H"
+STRIPE_TEST_SECRET_KEY          = "sk_test_dgtLaaF7M1X4Rf2lNw26JIbx"
+STRIPE_LIVE_MODE                = False
+DJSTRIPE_WEBHOOK_SECRET         = "whsec_123123"
+DJSTRIPE_USE_NATIVE_JSONFIELD   = True
+DJSTRIPE_FOREIGN_KEY_TO_FIELD   = "id"
+
+
+CAS_SERVER_URL = "http://localhost:9000/cas/"
+CAS_VERSION = '3'
+
+
+#SCHEMA_REGISTRY_URL             = env('SCHEMA_REGISTRY_URL')
+#STRIPE_LIVE_PUBLIC_KEY          = env("STRIPE_LIVE_PUBLIC_KEY")
+#STRIPE_LIVE_SECRET_KEY          = env("STRIPE_LIVE_SECRET_KEY")
+#STRIPE_TEST_PUBLIC_KEY          = env("STRIPE_TEST_PUBLIC_KEY")
+#STRIPE_TEST_SECRET_KEY          = env("STRIPE_TEST_SECRET_KEY")
+#STRIPE_LIVE_MODE                = env.bool("STRIPE_LIVE_MODE")
+#DJSTRIPE_WEBHOOK_SECRET         = env("DJSTRIPE_WEBHOOK_SECRET")
+#DJSTRIPE_USE_NATIVE_JSONFIELD   = env("DJSTRIPE_USE_NATIVE_JSONFIELD")
+#DJSTRIPE_FOREIGN_KEY_TO_FIELD   = env("DJSTRIPE_FOREIGN_KEY_TO_FIELD")
+#CAS_SERVER_URL                  = env("CAS_SERVER_URL")
+#CAS_VERSION                     = env("CAS_VERSION", 3)

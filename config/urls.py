@@ -12,6 +12,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     #salesman
     path('sales/', include('salesman.urls')),
+    # core urls
+    path('core/', include('core.urls')), # new
     #wagtail
     re_path(r'^cms/', include(wagtailadmin_urls)),
     re_path(r'^documents/', include(wagtaildocs_urls)),
