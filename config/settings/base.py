@@ -98,10 +98,10 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    'project.core',
-    'project.product',
-    'project.qrtable',
-    'project.payments',
+    'project.core.apps.CoreConfig',
+    'project.product.apps.ProductConfig',
+    'project.qrtable.apps.QrtableConfig',
+    'project.payments.apps.PaymentsConfig',
 
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -329,3 +329,8 @@ CAS_VERSION = '3'
 #DJSTRIPE_FOREIGN_KEY_TO_FIELD   = env("DJSTRIPE_FOREIGN_KEY_TO_FIELD")
 #CAS_SERVER_URL                  = env("CAS_SERVER_URL")
 #CAS_VERSION                     = env("CAS_VERSION", 3)
+
+# salesman
+SALESMAN_PRODUCT_TYPES = {
+    'product.Product': 'product.serializers.ProductSerializer',
+}

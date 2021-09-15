@@ -124,6 +124,13 @@ class Product(ClusterableModel):
     def sort_by_attribute_fields() -> list:
         return ["concatenated_values_order", "concatenated_values", "name"]
 
+    @property
+    def code(self):
+        return str(self.pk)
+
+    def get_price(self):
+        return str(12)
+
 
 def get_product_media_image_path(instance, filename):
     return os.path.join(f'product/{str(instance.product.id)}', str(instance.id), filename)

@@ -24,7 +24,13 @@ class QRTable(models.Model):
     name = models.CharField(max_length=200)
     status = models.BooleanField(default=False)
     code = models.CharField(max_length=25, blank=True, null=True, unique=True)
-    image = models.ImageField(upload_to=get_image_path, blank=True, null=True)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     panels = [
         FieldPanel('name'),
