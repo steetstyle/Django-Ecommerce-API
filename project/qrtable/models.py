@@ -17,9 +17,6 @@ def saveSystemCode(inClass, inCode, inPK, prefix):
 
     return systemCode
 
-def get_image_path(instance, filename):
-    return os.path.join('qrs', str(instance.id), filename)
-
 class QRTable(models.Model):
     name = models.CharField(max_length=200)
     status = models.BooleanField(default=False)

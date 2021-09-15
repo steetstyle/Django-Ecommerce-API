@@ -11,19 +11,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='category',
-            name='image',
-            field=models.ImageField(blank=True, null=True, upload_to=product.models.get_category_image_path),
-        ),
-        migrations.AddField(
-            model_name='product',
-            name='image',
-            field=models.ImageField(blank=True, null=True, upload_to=product.models.get_product_image_path),
-        ),
-        migrations.AddField(
-            model_name='productmedia',
-            name='image',
-            field=models.ImageField(blank=True, null=True, upload_to=product.models.get_category_image_path),
-        ),
+       
     ]

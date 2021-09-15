@@ -19,10 +19,6 @@ from wagtail.core.fields import RichTextField
 
 from . import ProductMediaTypes
 
-
-def get_category_image_path(instance, filename):
-    return os.path.join(f'category/{str(instance.id)}', str(instance.id), filename)
-
 class Category(MPTTModel,ClusterableModel):
     name = models.CharField(max_length=250)
     slug = models.SlugField(max_length=255, unique=True, allow_unicode=True)
@@ -57,10 +53,6 @@ class Category(MPTTModel,ClusterableModel):
     def __str__(self) -> str:
         return self.name
 
-
-def get_product_image_path(instance, filename):
-    return os.path.join(f'product/{str(instance.id)}', str(instance.id), filename)
-
 class Product(ClusterableModel):
     name = models.CharField(max_length=250)
     slug = models.SlugField(max_length=255, unique=True, allow_unicode=True)
@@ -82,6 +74,8 @@ class Product(ClusterableModel):
     )
     updated_at = models.DateTimeField(auto_now=True, null=True)
     charge_taxes = models.BooleanField(default=True)
+    base_price = models.DecimalField(max_digits=8, decimal_places=6)
+    price = models.DecimalField(max_digits=8, decimal_places=6)
   
     rating = models.FloatField(null=True, blank=True)
 
@@ -128,12 +122,11 @@ class Product(ClusterableModel):
     def code(self):
         return str(self.pk)
 
+    def get_base_price(self):
+        return str(self.base_price)
+
     def get_price(self):
-        return str(12)
-
-
-def get_product_media_image_path(instance, filename):
-    return os.path.join(f'product/{str(instance.product.id)}', str(instance.id), filename)
+        return str(self.price)
 
 class ProductMedia(ClusterableModel):
     product = ParentalKey(Product, related_name="media", on_delete=models.CASCADE)
