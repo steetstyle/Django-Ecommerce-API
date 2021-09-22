@@ -22,3 +22,5 @@ wagtail==2.14.1 # https://github.com/wagtail/wagtail
 dj-stripe==2.5.1 # https://github.com/dj-stripe/dj-stripe
 pyqrcode==1.2.1 # https://github.com/mnooner256/pyqrcode
 django-cas-ng==4.2.1 # https://github.com/django-cas-ng/django-cas-ng
+djangorestframework_jwt==1.11.0 # 
+djangorestframework-simplejwt==4.8.0

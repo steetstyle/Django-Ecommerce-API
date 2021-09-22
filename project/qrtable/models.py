@@ -1,18 +1,25 @@
-from django.db import models
 import uuid
 import os
+import requests
+from io import BytesIO
+
 import pyqrcode
 
+from django.core.files.images import ImageFile
+from django.db import models
 
 from wagtail.admin.edit_handlers import FieldPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.images.models import Image
+
+
 
 def saveSystemCode(inClass, inCode, inPK, prefix):
     systemCode = inCode
     if not systemCode:
         systemCode = uuid.uuid4().hex[:6].upper()
 
-    while inClass.objects.filter(systemCode=systemCode).exclude(pk=inPK).exists():
+    while inClass.objects.filter(code=systemCode).exclude(pk=inPK).exists():
         systemCode = uuid.uuid4().hex[:6].upper()
 
     return systemCode
@@ -38,6 +45,10 @@ class QRTable(models.Model):
 
     def save(self, *args, **kwargs):
         self.code = saveSystemCode(QRTable, self.code, self.pk, "qr_")
-        #qr = pyqrcode.png(get_image_path(self,self.code))
-        #self.image = qr
+        http_res = requests.get(f'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={self.code}')
+        title = f'{self.code}.jpg'
+        image_file = ImageFile(BytesIO(http_res.content), name=title)
+        image = Image(title=title, file=image_file)
+        image.save()
+        self.image = image
         super(QRTable, self).save(*args, **kwargs)

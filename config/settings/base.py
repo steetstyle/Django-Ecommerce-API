@@ -5,6 +5,8 @@ from pathlib import Path
 
 import environ
 
+from datetime import timedelta
+
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # project/
 APPS_DIR = ROOT_DIR / "project"
@@ -71,6 +73,7 @@ THIRD_PARTY_APPS = [
     'salesman.orders',
     'salesman.admin',
     # wagtail
+    'wagtail.api.v2',
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.contrib.modeladmin',
@@ -121,7 +124,6 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
     # cas auth backends
     'django_cas_ng.backends.CASBackend',
-
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 #AUTH_USER_MODEL = "users.User"
@@ -286,6 +288,13 @@ LOGGING = {
             "formatter": "verbose",
         }
     },
+    #ldap
+    "loggers": {
+        "django_python3_ldap": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+    },
     "root": {"level": "INFO", "handlers": ["console"]},
 }
 
@@ -314,11 +323,6 @@ DJSTRIPE_USE_NATIVE_JSONFIELD   = True
 DJSTRIPE_FOREIGN_KEY_TO_FIELD   = "id"
 
 
-CAS_SERVER_URL = "http://localhost:9000/cas/"
-CAS_VERSION = '3'
-
-
-#SCHEMA_REGISTRY_URL             = env('SCHEMA_REGISTRY_URL')
 #STRIPE_LIVE_PUBLIC_KEY          = env("STRIPE_LIVE_PUBLIC_KEY")
 #STRIPE_LIVE_SECRET_KEY          = env("STRIPE_LIVE_SECRET_KEY")
 #STRIPE_TEST_PUBLIC_KEY          = env("STRIPE_TEST_PUBLIC_KEY")
@@ -327,10 +331,64 @@ CAS_VERSION = '3'
 #DJSTRIPE_WEBHOOK_SECRET         = env("DJSTRIPE_WEBHOOK_SECRET")
 #DJSTRIPE_USE_NATIVE_JSONFIELD   = env("DJSTRIPE_USE_NATIVE_JSONFIELD")
 #DJSTRIPE_FOREIGN_KEY_TO_FIELD   = env("DJSTRIPE_FOREIGN_KEY_TO_FIELD")
-#CAS_SERVER_URL                  = env("CAS_SERVER_URL")
-#CAS_VERSION                     = env("CAS_VERSION", 3)
 
 # salesman
 SALESMAN_PRODUCT_TYPES = {
     'product.Product': 'product.serializers.ProductSerializer',
 }
+
+
+
+
+# REST framework settings
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'project.core.UnsafeSessionAuthentication',
+
+    )
+}
+
+# CAS Authentication
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'django_cas_ng.backends.CASBackend',
+)
+CAS_SERVER_URL = 'http://localhost:9000/cas/'
+CAS_VERSION = '3'
+CAS_REDIRECT_URL='/accounts/profile'
+CAS_APPLY_ATTRIBUTES_TO_USER = False
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+
+    'ALGORITHM': 'HS256',
+    #'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUDIENCE': None,
+    'ISSUER': None,
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+
+    'JTI_CLAIM': 'jti',
+
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+}
+
+
+BASE_URL = 'http://localhost:8000'
